@@ -17,6 +17,8 @@ app.init = function() {
 
   //set current player
   this.currentPlayer = 0;
+  //set the game as ongoing
+  this.ongoing = true;
 
   //places board elements on the DOM
   document.getElementsByClassName('board')[0].innerHTML = '';
@@ -31,6 +33,12 @@ app.init = function() {
       row.appendChild(square);
     }
     document.getElementsByClassName('board')[0].appendChild(row);
+
+    //set event listener on reset button
+    var resetButton = document.getElementsByClassName('reset-button')[0];
+    resetButton.addEventListener('click', function(event) {
+      app.resetGame();
+    });
   }
 
   //attaches event listeners to the squares
@@ -62,8 +70,11 @@ app.render = function() {
 
 //this will change state and call render
 app.placeToken = function(i, j, token) {
-  this.board[i][j] = token;
-  this.render();
+  if (this.ongoing) {
+    this.board[i][j] = token;
+    this.render();
+  }
+  
 };
 
 app.checkForWin = function(token) {
@@ -137,26 +148,28 @@ app.isBoardFull = function() {
 };
 
 app.nextTurn = function() {
-  //sees if the current player won
-  if(this.checkForWin(PLAYER_SYMBOLS[this.currentPlayer])) {
-    this.endGame(this.currentPlayer);
-    return;
-  } else if (this.isBoardFull()) {
-    this.endGame();
-    return;
+  if (this.ongoing) {
+      //sees if the current player won
+    if(this.checkForWin(PLAYER_SYMBOLS[this.currentPlayer])) {
+      this.endGame(this.currentPlayer);
+      return;
+    } else if (this.isBoardFull()) {
+      this.endGame();
+      return;
+    }
+
+    //changes current player
+    if (this.currentPlayer === NUMBER_OF_PLAYERS - 1) {
+      this.currentPlayer = 0;
+    } else {
+      this.currentPlayer++;
+    }
+
+    //displays current player
+    var gameInfo = document.getElementsByClassName('game-info')[0];
+    gameInfo.innerText = 'Player ' + (Number(this.currentPlayer) + 1);
   }
-
-  //changes current player
-  if (this.currentPlayer === NUMBER_OF_PLAYERS - 1) {
-    this.currentPlayer = 0;
-  } else {
-    this.currentPlayer++;
-  }
-
-  //displays current player
-  var gameInfo = document.getElementsByClassName('game-info')[0];
-  gameInfo.innerText = 'Player ' + (Number(this.currentPlayer) + 1);
-
+  
 };
 
 app.endGame = function(winner) {
@@ -168,7 +181,25 @@ app.endGame = function(winner) {
   } else {
     banner.innerText = `Player ${winner + 1} Wins!`;
   }
+  this.ongoing = false;
 };
+
+app.resetGame = function() {
+  document.getElementsByClassName('game-outcome')[0].innerText = '';
+  this.ongoing = true;
+
+  for (var i = 0; i < this.board.length; i++) {
+    for (var j = 0; j < this.board[i].length; j++) {
+      this.board[i][j] = ' ';
+    }
+  }
+
+  this.currentPlayer = 0;
+  var gameInfo = document.getElementsByClassName('game-info')[0];
+  gameInfo.innerText = 'Player 1';
+  this.render();
+
+}
 
 
 

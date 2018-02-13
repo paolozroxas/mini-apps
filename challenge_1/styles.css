@@ -7,11 +7,30 @@ h1, h4 {
   margin: 5px;
 }
 
+.reset-button-container {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+}
+
+.reset-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  height: 30px;
+  width: 90px;
+  color: grey;
+  background-color: white;
+  border: solid grey;
+  border-width: 1.5px
+}
+
 .board {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 20px;
+  padding: 10px;
 }
 
 .row {
@@ -37,4 +56,14 @@ h1, h4 {
 
 .game-info {
   font-size: 16px;
+}
+
+.game-outcome {
+
+}
+
+.reset-button:hover {
+  border-color: black;
+  color: black;
+  cursor: pointer;
 }
