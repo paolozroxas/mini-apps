@@ -1,5 +1,3 @@
-BOARD_DEGREE = 3;
-NUMBER_OF_PLAYERS = 2;
 PLAYER_SYMBOLS = ['X', 'O', '+', '*'];
 
 app = {};
@@ -7,9 +5,9 @@ app = {};
 app.init = function() {
   //create initial board state
   this.board = [];
-  for (var i = 0; i < BOARD_DEGREE; i++) {
+  for (var i = 0; i < setup.boardDegree; i++) {
     var row = [];
-    for (var j = 0; j < BOARD_DEGREE; j++) {
+    for (var j = 0; j < setup.boardDegree; j++) {
       row.push(' ');
     }
     this.board.push(row);
@@ -19,6 +17,18 @@ app.init = function() {
   this.currentPlayer = 0;
   //set the game as ongoing
   this.ongoing = true;
+  //puts number of players in app
+  this.playerCount = setup.playerCount;
+  //puts player names in app
+  this.playerNames = setup.playerNames.slice();
+  //sets up wins array
+  this.playerWins = [];
+  for (var i = 0; i < this.playerCount; i++) {
+    this.playerWins.push(0);
+  }
+
+  var gameInfo = document.getElementsByClassName('game-info')[0];
+  gameInfo.innerText = `${this.playerNames[this.currentPlayer]} placing token ${PLAYER_SYMBOLS[this.currentPlayer]}`
 
   //places board elements on the DOM
   document.getElementsByClassName('board')[0].innerHTML = '';
@@ -33,10 +43,17 @@ app.init = function() {
       row.appendChild(square);
     }
     document.getElementsByClassName('board')[0].appendChild(row);
+  }
 
-    //set event listener on reset button
-    var resetButton = document.getElementsByClassName('reset-button')[0];
-    resetButton.addEventListener('click', function(event) {
+  //create play again button and add event listener
+  if (document.getElementsByClassName('play-again-button-container')[0].childNodes.length < 1) {
+    var playAgainButton = document.createElement('div');
+    playAgainButton.id = 'play-again-button';
+    playAgainButton.className = 'button';
+    playAgainButton.innerText = 'Play Again';
+    var buttonContainer = document.getElementsByClassName('play-again-button-container')[0];
+    buttonContainer.appendChild(playAgainButton);
+    playAgainButton.addEventListener('click', function(event) {
       app.resetGame();
     });
   }
@@ -44,12 +61,14 @@ app.init = function() {
   //attaches event listeners to the squares
   var squares = document.getElementsByClassName('square');
   for (var k = 0; k < squares.length; k++) {
-      squares[k].addEventListener('click', function(event) {
+    squares[k].addEventListener('click', function(event) {
       var i = event.target.id[0];
       var j = event.target.id[2];
-      app.placeToken(i, j, PLAYER_SYMBOLS[app.currentPlayer]);
-      app.nextTurn();
-    })
+      if (app.ongoing && app.board[i][j] === ' ') {
+        app.placeToken(i, j, PLAYER_SYMBOLS[app.currentPlayer]);
+        app.nextTurn();
+      }
+    });
   }
 
 };
@@ -70,11 +89,8 @@ app.render = function() {
 
 //this will change state and call render
 app.placeToken = function(i, j, token) {
-  if (this.ongoing) {
-    this.board[i][j] = token;
-    this.render();
-  }
-  
+  this.board[i][j] = token;
+  this.render();
 };
 
 app.checkForWin = function(token) {
@@ -148,27 +164,25 @@ app.isBoardFull = function() {
 };
 
 app.nextTurn = function() {
-  if (this.ongoing) {
       //sees if the current player won
-    if(this.checkForWin(PLAYER_SYMBOLS[this.currentPlayer])) {
-      this.endGame(this.currentPlayer);
-      return;
-    } else if (this.isBoardFull()) {
-      this.endGame();
-      return;
-    }
-
-    //changes current player
-    if (this.currentPlayer === NUMBER_OF_PLAYERS - 1) {
-      this.currentPlayer = 0;
-    } else {
-      this.currentPlayer++;
-    }
-
-    //displays current player
-    var gameInfo = document.getElementsByClassName('game-info')[0];
-    gameInfo.innerText = 'Player ' + (Number(this.currentPlayer) + 1);
+  if(this.checkForWin(PLAYER_SYMBOLS[this.currentPlayer])) {
+    this.endGame(this.currentPlayer);
+    return;
+  } else if (this.isBoardFull()) {
+    this.endGame();
+    return;
   }
+
+  //changes current player
+  if (this.currentPlayer === this.playerCount - 1) {
+    this.currentPlayer = 0;
+  } else {
+    this.currentPlayer++;
+  }
+
+  //displays current player
+  var gameInfo = document.getElementsByClassName('game-info')[0];
+  gameInfo.innerText = `${this.playerNames[this.currentPlayer]} placing token ${PLAYER_SYMBOLS[this.currentPlayer]}`;
   
 };
 
@@ -198,15 +212,66 @@ app.resetGame = function() {
   var gameInfo = document.getElementsByClassName('game-info')[0];
   gameInfo.innerText = 'Player 1';
   this.render();
-
 }
 
+setup = {};
+setup.boardDegree = 3;
+setup.playerCount = 2;
+setup.playerNames = [];
 
+setup.init = function() {
+  var addPlayerButton = document.getElementById('add-player-button');
+  addPlayerButton.addEventListener('click', function(event) {
+    if (setup.playerCount < 4) {
+      var playerInput = document.createElement('div');
+      setup.playerCount++;
+      playerString = 'Player ' + setup.playerCount;
+
+      playerInput.className = 'menu-bar-item';
+      playerInput.innerText = playerString;
+      
+      var inputField = document.createElement('input');
+      inputField.className = 'name-input';
+      inputField.type = 'text';
+      
+      playerInput.appendChild(inputField);
+      document.getElementsByClassName('player-list')[0].appendChild(playerInput);
+    } else {
+      addPlayerButton.innerText = 'Max Reached'
+    }
+    
+  });
+
+  var plusSize = document.getElementById('increase-board-size-button');
+  plusSize.addEventListener('click', function() {
+    if (setup.boardDegree < 8) {
+      setup.boardDegree++;
+      document.getElementById('board-size').innerText = `${setup.boardDegree} x ${setup.boardDegree}`;
+    } else {
+      plusSize.innerText = 'Max Reached';
+    }
+  });
+
+  var createGameButton = document.getElementById('create-game-button');
+  createGameButton.addEventListener('click', function() {
+    var names = [];
+    var inputs = document.getElementsByClassName('name-input');
+    for (var i = 0; i < inputs.length; i++) {
+      if (!inputs[i].value) {
+        names.push('Player ' + (i + 1));
+      } else {
+        names.push(inputs[i].value);
+      }
+    }
+    setup.playerNames = names;
+    app.init();
+    app.render();
+  });
+
+};
 
 document.addEventListener('DOMContentLoaded', function(event) {
-  app.init();
-  app.render();
-
+  setup.init();
 
 });
 

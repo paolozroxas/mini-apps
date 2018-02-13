@@ -4,22 +4,56 @@
     <link rel="stylesheet" href="styles.css"/>
   </head>
   <body>
-    <div>
-    <h1>Tic Tac Toe</h1>
-    <h4>By Paolo Z. Roxas</h4>
-    <div>
+    <div class="outer-container">
 
-    <div class="reset-button-container">
-      <div class='reset-button'>Reset Game</div>
+      <div class="menu-bar">
+        <div class="menu-heading">
+          Player Names:
+        </div>
+        <div class="menu-bar-item player-list">
+          
+          <div class="menu-bar-item">
+            Player 1
+            <input class='name-input' type='text'/>
+          </div>
+          <div class="menu-bar-item">
+            Player 2
+            <input class='name-input' type='text'/>
+          </div>
+        </div>
+
+        <div class="menu-bar-item">
+          <div id="add-player-button" class=button>Add Player</div>
+        </div>
+
+        <div class="menu-heading">
+          Board Size:
+        </div>
+        <div id="board-size">3 x 3</div>
+        <div class="menu-bar-item">
+          <div id="increase-board-size-button" class=button>Board Size +</div>
+        </div>
+
+        <div id="create-game-button-container" class="menu-bar-item">
+          <div id="create-game-button" class=button>Create Game</div>
+        </div>
+
+      </div>
+
+      <div class="app">
+        <h1>Tic Tac Toe</h1>
+        <h4>By Paolo Z. Roxas</h4>
+        <div class="play-again-button-container"></div>
+        <div class="board"></div>
+        <div class="game-info"></div>
+        <h2 class='game-outcome'></h2>
+        <script src="app.js"></script>
+
+      </div>
+
+      <div class="leaderboard"></div>
+
     </div>
-
-    <div class="board"></div>
-
-    <div class="game-info">Player 1</div>
-
-    <h2 class='game-outcome'></h2>
-
-    <script src="app.js"></script>
   </body>
 </html>
 
