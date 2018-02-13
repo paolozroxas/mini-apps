@@ -246,10 +246,10 @@ setup.init = function() {
   plusSize.addEventListener('click', function() {
     if (setup.boardDegree < 8) {
       setup.boardDegree++;
-      document.getElementById('board-size').innerText = `${setup.boardDegree} x ${setup.boardDegree}`;
     } else {
-      plusSize.innerText = 'Max Reached';
+      setup.boardDegree = 3;
     }
+    document.getElementById('board-size').innerText = `${setup.boardDegree} x ${setup.boardDegree}`;
   });
 
   var createGameButton = document.getElementById('create-game-button');
