@@ -193,7 +193,7 @@ app.endGame = function(winner) {
   if(winner === undefined) {
     banner.innerText = 'Tied Game!'
   } else {
-    banner.innerText = `Player ${winner + 1} Wins!`;
+    banner.innerText = `${this.playerNames[winner]} Wins!`;
   }
   this.ongoing = false;
 };
