@@ -210,7 +210,7 @@ app.resetGame = function() {
 
   this.currentPlayer = 0;
   var gameInfo = document.getElementsByClassName('game-info')[0];
-  gameInfo.innerText = 'Player 1';
+  gameInfo.innerText = `${this.playerNames[this.currentPlayer]} placing token ${PLAYER_SYMBOLS[this.currentPlayer]}`;
   this.render();
 }
 
