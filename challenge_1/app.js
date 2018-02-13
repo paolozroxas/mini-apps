@@ -254,6 +254,9 @@ setup.init = function() {
 
   var createGameButton = document.getElementById('create-game-button');
   createGameButton.addEventListener('click', function() {
+
+    document.getElementsByClassName('game-outcome')[0].innerHTML = '';
+
     var names = [];
     var inputs = document.getElementsByClassName('name-input');
     for (var i = 0; i < inputs.length; i++) {
