@@ -19925,8 +19925,10 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: 'advanceGame',
     value: function advanceGame(idxCol) {
-      //check if game is ongoing
-      if (!this.state.ongoing) {
+      var _this2 = this;
+
+      //check if game is ongoing or if column is full
+      if (!this.state.ongoing || this.state.board[idxCol][5] != 'white') {
         return;
       }
 
@@ -19949,11 +19951,14 @@ var App = function (_React$Component) {
 
       //set currentPlayer state and status message
       if (this.state.currentPlayer === this.props.players.length - 1) {
-        this.setState({ currentPlayer: 0 });
+        this.setState({ currentPlayer: 0 }, function () {
+          _this2.setState({ gameStatus: _this2.props.players[_this2.state.currentPlayer].name + '\'s Turn' });
+        });
       } else {
-        this.setState({ currentPlayer: this.state.currentPlayer + 1 });
+        this.setState({ currentPlayer: this.state.currentPlayer + 1 }, function () {
+          _this2.setState({ gameStatus: _this2.props.players[_this2.state.currentPlayer].name + '\'s Turn' });
+        });
       }
-      this.setState({ gameStatus: this.props.players[this.state.currentPlayer].name + '\'s Turn' });
     }
   }, {
     key: 'endGame',

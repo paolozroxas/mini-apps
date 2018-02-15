@@ -37,8 +37,8 @@ class App extends React.Component {
   }//end constructor
 
   advanceGame(idxCol) {
-    //check if game is ongoing
-    if (!(this.state.ongoing)) {
+    //check if game is ongoing or if column is full
+    if (!(this.state.ongoing) || this.state.board[idxCol][5] != 'white') {
       return;
     }
 
@@ -61,11 +61,14 @@ class App extends React.Component {
 
     //set currentPlayer state and status message
     if (this.state.currentPlayer === this.props.players.length - 1) {
-      this.setState({currentPlayer: 0});
+      this.setState({currentPlayer: 0}, () => {
+        this.setState({gameStatus: this.props.players[this.state.currentPlayer].name + '\'s Turn'});
+      });
     } else {
-      this.setState({currentPlayer: this.state.currentPlayer + 1});
+      this.setState({currentPlayer: this.state.currentPlayer + 1}, () => {
+        this.setState({gameStatus: this.props.players[this.state.currentPlayer].name + '\'s Turn'});
+      });
     }
-    this.setState({gameStatus: this.props.players[this.state.currentPlayer].name + '\'s Turn'})
   }
 
   endGame (player) {
