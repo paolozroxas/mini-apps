@@ -966,8 +966,8 @@ var BOARD_HEIGHT = 6;
 var BOARD_WIDTH = 7;
 var PLAYER_COUNT = 2;
 
-//create players
-var players = [{ name: 'Player 1', token: 'R', color: 'red', wins: 0 }, { name: 'Player 2', token: 'Y', color: 'yellow', wins: 0 }];
+//create players and colors
+var players = [{ name: 'Player 1', color: 'darkred', wins: 0 }, { name: 'Player 2', color: 'gold', wins: 0 }];
 
 //The props to pass in to App:
 //boardHeight, boardWidth, players
@@ -19888,8 +19888,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 // var players = [
-//   {name: 'Player 1', token: 'R', color: 'red', wins: 0},
-//   {name: 'Player 2', token: 'Y', color: 'yellow', wins: 0}
+//   {name: 'Player 1', token: 'R', color: 'darkred', wins: 0},
+//   {name: 'Player 2', token: 'Y', color: 'gold', wins: 0}
 // ];
 
 //The props to pass in to App:
@@ -19907,26 +19907,138 @@ var App = function (_React$Component) {
     _this.state = {
       board: [],
       currentPlayer: 0,
-      resolved: false
+      ongoing: true
     };
     _this.state.gameStatus = props.players[_this.state.currentPlayer].name + '\'s Turn';
 
     //create game board
-    for (var i = 0; i < props.boardHeight; i++) {
-      var row = [];
-      for (var j = 0; j < props.boardWidth; j++) {
-        row.push(' ');
+    for (var i = 0; i < props.boardWidth; i++) {
+      var col = [];
+      for (var j = 0; j < props.boardHeight; j++) {
+        col.push('white');
       }
-      _this.state.board.push(row);
+      _this.state.board.push(col);
     }
-
     return _this;
   } //end constructor
 
   _createClass(App, [{
-    key: 'clickHandler',
-    value: function clickHandler(event) {
-      console.log(event.target);
+    key: 'advanceGame',
+    value: function advanceGame(idxCol) {
+      //check if game is ongoing
+      if (!this.state.ongoing) {
+        return;
+      }
+
+      //update board state
+      var i = 0;
+      while (this.state.board[idxCol][i] !== 'white' && i < this.props.boardHeight - 1) {
+        i++;
+      }
+      this.state.board[idxCol][i] = this.props.players[this.state.currentPlayer].color;
+      this.setState({ board: this.state.board });
+
+      //check for win or tie
+      if (this.checkForWin(this.props.players[this.state.currentPlayer].color)) {
+        this.endGame(this.state.currentPlayer);
+        return;
+      } else if (this.boardIsFull()) {
+        this.endGame();
+        return;
+      }
+
+      //set currentPlayer state and status message
+      if (this.state.currentPlayer === this.props.players.length - 1) {
+        this.setState({ currentPlayer: 0 });
+      } else {
+        this.setState({ currentPlayer: this.state.currentPlayer + 1 });
+      }
+      this.setState({ gameStatus: this.props.players[this.state.currentPlayer].name + '\'s Turn' });
+    }
+  }, {
+    key: 'endGame',
+    value: function endGame(player) {
+      if (player === undefined) {
+        this.setState({ gameStatus: 'Tied Game!' });
+      } else {
+        this.setState({ gameStatus: 'Victory for ' + this.props.players[player].name + '!' });
+      }
+      console.log('VICTORY FOR ', player);
+      this.setState({ ongoing: false });
+    }
+  }, {
+    key: 'boardIsFull',
+    value: function boardIsFull() {
+      var count = 0;
+      for (var i = 0; i < this.props.boardWidth; i++) {
+        for (var j = 0; j < this.props.boardHeight; j++) {
+          if (this.state.board[i][j] !== 'white') {
+            count++;
+          }
+        }
+      }
+      return count >= this.props.boardWidth * this.props.boardHeight;
+    }
+  }, {
+    key: 'checkForWin',
+    value: function checkForWin(color) {
+      return this.checkForRowColWin(color, true) || this.checkForRowColWin(color, false) || this.checkForDiagWin(color);
+    }
+  }, {
+    key: 'checkForRowColWin',
+    value: function checkForRowColWin(color, isCol) {
+      if (isCol) {
+        var iMax = this.props.boardWidth;
+        var jMax = this.props.boardHeight;
+      } else {
+        var iMax = this.props.boardHeight;
+        var jMax = this.props.boardWidth;
+      }
+      for (var i = 0; i < iMax; i++) {
+        var count = 0;
+        for (var j = 0; j < jMax; j++) {
+          if ((isCol ? this.state.board[i][j] : this.state.board[j][i]) === color) {
+            count++;
+          } else {
+            count = 0;
+          }
+          if (count >= 4) {
+            return true;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'checkForDiagWin',
+    value: function checkForDiagWin(color) {
+      for (var j = 0; j < 3; j++) {
+        for (var i = 0; i < 4; i++) {
+          if (this.checkForDiagWinHelper(i, j, color, true)) {
+            return true;
+          }
+        }
+      }
+      for (var j = 3; j < 6; j++) {
+        for (var i = 0; i < 4; i++) {
+          if (this.checkForDiagWinHelper(i, j, color, false)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  }, {
+    key: 'checkForDiagWinHelper',
+    value: function checkForDiagWinHelper(i, j, color, isUp) {
+      var count = 0;
+      for (var x = 0; x < 4; x++) {
+        if (this.state.board[i][j] === color) {
+          count++;
+        }
+        i++;
+        isUp ? j++ : j--;
+      }
+      return count >= 4;
     }
   }, {
     key: 'render',
@@ -19938,7 +20050,7 @@ var App = function (_React$Component) {
         _react2.default.createElement(_board2.default, { board: this.state.board,
           currentPlayer: this.props.players[this.state.currentPlayer],
           resolved: this.state.resolved,
-          clickHandler: this.clickHandler.bind(this) }),
+          advanceGame: this.advanceGame.bind(this) }),
         _react2.default.createElement(_gameStatus2.default, { message: this.state.gameStatus }),
         _react2.default.createElement(_footer2.default, null)
       );
@@ -19989,6 +20101,8 @@ module.exports = Title;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
@@ -19999,25 +20113,22 @@ var _underscore2 = _interopRequireDefault(_underscore);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//props passed to Board: board, player, clickHandler
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-//require dependencies
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //require dependencies
+
+
+//props passed to Board: board, player, advanceGame
+
 var Board = function Board(props) {
-  var board = props.board;
-
-  //get array of columns. this corresponds to the board's columns, left to right
-  var columns = [];
-  for (var idxCol = 0; idxCol < board[0].length; idxCol++) {
-    var column = [];
-    for (var i = 0; i < board.length; i++) {
-      column.push(board[i][idxCol]);
-    }
-    columns.push(column);
-  }
+  //array columns: this corresponds to the board's columns, left to right
+  var columns = props.board;
 
   //create Column components
   var columnComponents = _underscore2.default.map(columns, function (column, index) {
-    return _react2.default.createElement(Column, { column: column, key: index, onClick: props.clickHandler });
+    return _react2.default.createElement(Column, { column: column, key: index, idxCol: index, advanceGame: props.advanceGame });
   });
 
   return _react2.default.createElement(
@@ -20027,24 +20138,44 @@ var Board = function Board(props) {
   );
 };
 
-var Column = function Column(props) {
-  var circleComponents = _underscore2.default.map(props.column, function (value, index) {
-    return _react2.default.createElement(Circle, { value: value, key: index, idxCol: props.idxCol });
-  });
+var Column = function (_React$Component) {
+  _inherits(Column, _React$Component);
 
-  return _react2.default.createElement(
-    'div',
-    { className: 'column' },
-    circleComponents
-  );
-};
+  function Column(props) {
+    _classCallCheck(this, Column);
+
+    return _possibleConstructorReturn(this, (Column.__proto__ || Object.getPrototypeOf(Column)).call(this, props));
+  }
+
+  _createClass(Column, [{
+    key: 'clickHandler',
+    value: function clickHandler(event) {
+      //in this function, i have access to: event.target, this=Column, this.props.advanceGame
+      this.props.advanceGame(this.props.idxCol);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var circleComponents = _underscore2.default.map(this.props.column, function (value, index) {
+        return _react2.default.createElement(Circle, { value: value, key: index, idxRow: index, idxCol: _this2.props.idxCol });
+      });
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'column', onClick: this.clickHandler.bind(this) },
+        circleComponents
+      );
+    }
+  }]);
+
+  return Column;
+}(_react2.default.Component);
 
 var Circle = function Circle(props) {
-  return _react2.default.createElement(
-    'div',
-    { className: 'circle' },
-    props.value
-  );
+  var circleStyle = { borderColor: props.value };
+  return _react2.default.createElement('div', { className: 'circle', style: circleStyle });
 };
 
 module.exports = Board;

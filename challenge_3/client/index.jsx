@@ -11,11 +11,12 @@ var BOARD_HEIGHT = 6;
 var BOARD_WIDTH = 7;
 var PLAYER_COUNT = 2;
 
-//create players
+//create players and colors
 var players = [
-  {name: 'Player 1', token: 'R', color: 'red', wins: 0},
-  {name: 'Player 2', token: 'Y', color: 'yellow', wins: 0}
+  {name: 'Player 1', color: 'darkred', wins: 0},
+  {name: 'Player 2', color: 'gold', wins: 0}
 ];
+
 
 //The props to pass in to App:
 //boardHeight, boardWidth, players
