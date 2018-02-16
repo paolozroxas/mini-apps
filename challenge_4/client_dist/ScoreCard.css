@@ -1,0 +1,96 @@
+.scorecard-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.scorecard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.scorecard-name {
+  padding: 7px;
+}
+
+.frames {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border-top: solid black;
+  border-left: solid black;
+  border-bottom: solid black;
+
+  width: 70px;
+  height: 100px;
+}
+
+.frame-round {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-bottom: solid black;
+  height: 33px;
+  width: 70px;
+}
+
+.frame-score {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 33px;
+}
+
+.frame-score-leftbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 33px;
+  flex-grow: 1;
+}
+
+.frame-score-rightbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 33px;
+  border-left: solid black;
+  border-bottom: solid black;
+  flex-grow: 1;
+}
+
+.frame-total {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 33px;
+  width: 70px;
+}
+
+.frame-final {
+  border-right: solid black;
+}
